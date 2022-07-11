@@ -1,0 +1,22 @@
+agentDeploymentName: otel-collector-agent
+
+includeNamespaceCreation: false
+
+# Image registry
+registry:
+
+# Image of the cluster-gateway instances
+image:
+
+otelAgentImage:
+otelAgentImagePullSecrets: []
+
+# Number of replicas
+replicas:
+
+spokeAddonNamespace: "open-cluster-management-otel-collector"
+additionalcollectorArgs: []
+
+agentDeploymentAnnotations: {}
+
+addonAgentArgs: []
