@@ -3,16 +3,15 @@ agentDeploymentName: otel-collector-agent
 includeNamespaceCreation: false
 
 # Image registry
-registry:
+registry: docker.io/nitishchauhan0022
+image: otelcollector-addon
+tag: latest
 
-# Image of the cluster-gateway instances
-image:
-
-otelAgentImage:
+otelCollectorImage: otel/opentelemetry-collector:0.56.0
 otelAgentImagePullSecrets: []
 
 # Number of replicas
-replicas:
+replicas: 1
 
 spokeAddonNamespace: "open-cluster-management-otel-collector"
 additionalcollectorArgs: []

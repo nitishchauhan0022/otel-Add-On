@@ -11,8 +11,7 @@ spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      open-cluster-management.io/addon: otel-collector-addon
-      otel.open-cluster-management.io/component-name: otel-collector
+      open-cluster-management.io/addon: otel-collector
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -25,12 +24,14 @@ spec:
       {{ toYaml . | indent 8 }}
       {{- end }}
       labels:
-        open-cluster-management.io/addon: otel-collector-addon
-        otel.open-cluster-management.io/component-name: otel-collector
+        open-cluster-management.io/addon: otel-collector
     spec:
       containers:
         - name: otel-collector
-          image: {{ .Values.otelCollectorAgentImage }}
+          command:
+            - /otelcol
+            - --config=/conf/relay.yaml
+          image: {{ .Values.otelCollectorImage }}
           imagePullPolicy: IfNotPresent
           ports:
             - name: otlp
@@ -83,6 +84,7 @@ spec:
       volumes:
         - name: collector-config
           configMap:
+            name : collector-config
             items:
               - key: relay
                 path: relay.yaml
@@ -90,6 +92,6 @@ spec:
           secret:
             secretName: otel-collector-hub-kubeconfig
       imagePullSecrets:
-      {{- range .Values.otel-AgentImagePullSecrets }}
+      {{- range .Values.otelAgentImagePullSecrets }}
       - name: {{ . }}
       {{- end }}

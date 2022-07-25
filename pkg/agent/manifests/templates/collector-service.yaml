@@ -4,8 +4,8 @@ metadata:
   name: collector-service
   namespace: {{ .Release.Namespace }}
   label:
-    open-cluster-management.io/addon: otel-collector-addon
-    otel.open-cluster-management.io/component-name: otel-collector-Service
+    open-cluster-management.io/addon: otel-collector
+    open-cluster-management.io/otel/component-name: otel-collector-Service
 spec:
 type: ClusterIP
   ports:
@@ -19,5 +19,4 @@ type: ClusterIP
       protocol: TCP
   selector:
     matchLabels:
-      open-cluster-management.io/addon: otel-collector-addon
-      otel.open-cluster-management.io/component-name: otel-collector
+      open-cluster-management.io/addon: otel-collector

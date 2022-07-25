@@ -4,8 +4,8 @@ metadata:
   name: collector-config
   namespace: {{ .Release.Namespace }}
   label:
-    open-cluster-management.io/addon: otel-collector-addon
-    otel.open-cluster-management.io/component-name: otel-collector-config
+    open-cluster-management.io/addon: otel-collector
+    open-cluster-management.io/otel/component-name: otel-collector-config
 
 data:
   relay: |
