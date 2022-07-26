@@ -34,6 +34,14 @@ rules:
       - update
       - patch
   - apiGroups:
+      - certificates.k8s.io
+    resources:
+      - signers
+    verbs:
+      - "*"
+    resourceNames:
+      - kubernetes.io/kube-apiserver-client
+  - apiGroups:
       - ""
     resources:
       - namespaces

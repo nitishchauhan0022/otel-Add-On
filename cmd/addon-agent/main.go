@@ -21,7 +21,6 @@ const envKeyPodNamespace = "POD_NAMESPACE"
 var (
 	hubKubeconfig          string
 	clusterName            string
-	otelCollectorNamespace string
 )
 
 func main() {
@@ -30,7 +29,6 @@ func main() {
 	klog.InitFlags(flag.CommandLine)
 	flag.StringVar(&hubKubeconfig, "hub-kubeconfig", "", "The kubeconfig to talk to hub cluster")
 	flag.StringVar(&clusterName, "cluster-name", "", "The name of the managed cluster")
-	flag.StringVar(&otelCollectorNamespace, "otel-collector-namespace", "open-cluster-management-addon", "The namespace where otel-collector pod lives")
 	flag.Parse()
 
 	// pipe controller-runtime logs to klog
