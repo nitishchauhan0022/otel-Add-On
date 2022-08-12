@@ -87,15 +87,15 @@ func GetcollectorValueFunc(
 			return nil, err
 		}
 		return map[string]interface{}{
-			"agentDeploymentName": "otel-collector-agent",
+			"agentDeploymentName":      "otel-collector-agent",
 			"includeNamespaceCreation": true,
-			"spokeAddonNamespace": addon.Spec.InstallNamespace,
+			"spokeAddonNamespace":      addon.Spec.InstallNamespace,
 
-			"clusterName":         cluster.Name,
-			"registry":            registry,
-			"image":               image,
-			"tag":                 tag,
-			"addonAgentArgs":      addonAgentArgs,
+			"clusterName":    cluster.Name,
+			"registry":       registry,
+			"image":          image,
+			"tag":            tag,
+			"addonAgentArgs": addonAgentArgs,
 		}, nil
 	}
 }

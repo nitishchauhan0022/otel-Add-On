@@ -19,8 +19,8 @@ import (
 const envKeyPodNamespace = "POD_NAMESPACE"
 
 var (
-	hubKubeconfig          string
-	clusterName            string
+	hubKubeconfig string
+	clusterName   string
 )
 
 func main() {

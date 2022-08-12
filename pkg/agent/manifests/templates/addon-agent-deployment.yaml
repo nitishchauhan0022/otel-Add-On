@@ -41,11 +41,6 @@ spec:
             - name: otlp-http
               containerPort: 4318
               protocol: TCP
-          args:
-            - --config=/conf/relay.yaml
-            {{- range .Values.additionalcollectorArgs }}
-            - {{ . }}
-            {{- end }}
           volumeMounts:
             - name: collector-config
               mountPath: /conf

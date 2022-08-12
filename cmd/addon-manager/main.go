@@ -35,7 +35,7 @@ import (
 	addonv1alpha1 "open-cluster-management.io/api/addon/v1alpha1"
 
 	"otel-add-on/pkg/agent"
-
+	"otel-add-on/pkg/hub"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	//+kubebuilder:scaffold:imports
@@ -103,6 +103,12 @@ func main() {
 	addonManager, err := addonmanager.New(mgr.GetConfig())
 	if err != nil {
 		setupLog.Error(err, "unable to set up ready check")
+		os.Exit(1)
+	}
+
+	err = hub.Applymanifests(mgr.GetClient())
+	if err != nil {
+		setupLog.Error(err, "unable to deploy hub manifests")
 		os.Exit(1)
 	}
 
