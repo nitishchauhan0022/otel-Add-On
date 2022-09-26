@@ -1,17 +1,20 @@
 package agent
 
 import (
+	"context"
 	"embed"
+	"otel-add-on/pkg/common"
+	"otel-add-on/pkg/config"
+
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/klog/v2"
 	"open-cluster-management.io/addon-framework/pkg/addonfactory"
 	"open-cluster-management.io/addon-framework/pkg/agent"
 	"open-cluster-management.io/addon-framework/pkg/utils"
 	addonv1alpha1 "open-cluster-management.io/api/addon/v1alpha1"
 	clusterv1 "open-cluster-management.io/api/cluster/v1"
-	"otel-add-on/pkg/common"
-	"otel-add-on/pkg/config"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -86,6 +89,8 @@ func GetcollectorValueFunc(
 		if err != nil {
 			return nil, err
 		}
+		jaegerHubIp := gethubjaegerIp(nativeClient)
+		jaegerHubIp = jaegerHubIp + ":30584"
 		return map[string]interface{}{
 			"agentDeploymentName":      "otel-collector-agent",
 			"includeNamespaceCreation": true,
@@ -95,7 +100,22 @@ func GetcollectorValueFunc(
 			"registry":       registry,
 			"image":          image,
 			"tag":            tag,
+			"jaegerHubIp":    jaegerHubIp,
 			"addonAgentArgs": addonAgentArgs,
 		}, nil
 	}
+}
+
+func gethubjaegerIp(nativeClient kubernetes.Interface) string {
+	pods, err := nativeClient.CoreV1().Pods("open-cluster-management-addon").List(context.TODO(), metav1.ListOptions{})
+	var ip string
+	if err != nil {
+		klog.Error("unable to get pods deployments %s", err)
+	}
+	for _, pod := range pods.Items {
+		if pod.Labels["app"] == "jaeger" {
+			ip = pod.Status.HostIP
+		}
+	}
+	return ip
 }

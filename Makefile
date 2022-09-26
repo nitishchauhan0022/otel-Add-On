@@ -146,4 +146,5 @@ images:
 		-f cmd/Dockerfile \
 		--build-arg ADDON_AGENT_IMAGE_NAME=$(IMAGE_REGISTRY_NAME)/$(IMAGE_NAME):$(IMAGE_TAG) \
 		-t $(IMAGE_REGISTRY_NAME)/$(IMAGE_NAME):$(IMAGE_TAG) .
-		docker push $(IMAGE_REGISTRY_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)
+push-image:
+	docker push $(IMAGE_REGISTRY_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)

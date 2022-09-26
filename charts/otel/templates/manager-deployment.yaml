@@ -13,11 +13,11 @@ spec:
       labels:
         open-cluster-management.io/addon: otel-collector
     spec:
-      serviceAccount: otel-collector
+      serviceAccountName: otel-collector
       containers:
         - name: manager
+          imagePullPolicy: Always
           image: {{ .Values.registry }}/{{ .Values.image }}:{{ .Values.tag | default (print "v" .Chart.Version) }}
-          imagePullPolicy: IfNotPresent
           command:
             - /manager
           args:

@@ -3,7 +3,7 @@ package common
 const (
 	AddonName           = "otel-collector"
 	AddonFullName       = "open-cluster-management:otel-collector"
-	AgentDeploymentName = "otel-collector-addon-agent"
+	AgentDeploymentName = "otel-collector-agent"
 )
 
 const (

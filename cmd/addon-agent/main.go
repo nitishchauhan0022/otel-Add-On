@@ -41,7 +41,7 @@ func main() {
 
 	spokeClient, err := kubernetes.NewForConfig(ctrl.GetConfigOrDie())
 
-	cfg.UserAgent = "otelcollector-agent-addon-agent"
+	cfg.UserAgent = "otel-collector-addon-agent"
 
 	if err != nil {
 		panic(fmt.Errorf("failed to create spoke client, err: %w", err))

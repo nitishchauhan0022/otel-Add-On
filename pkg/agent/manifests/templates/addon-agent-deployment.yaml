@@ -53,7 +53,7 @@ spec:
               cpu: "300m"
         - name: addon-agent
           image: {{ .Values.registry }}/{{ .Values.image }}:{{ .Values.tag }}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - /agent
           args:

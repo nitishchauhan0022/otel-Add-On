@@ -5,4 +5,4 @@ metadata:
 spec:
   addOnMeta:
     displayName: otel-collector
-    description: otel-collector
+    description: otel-collector-add-on

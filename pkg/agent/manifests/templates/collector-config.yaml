@@ -26,7 +26,7 @@ data:
         loglevel: info
 
       jaeger:
-        endpoint:
+        endpoint: {{ .Values.jaegerHubIp }}
         tls:
           insecure: true
 
@@ -35,4 +35,4 @@ data:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [logging]
+          exporters: [logging, jaeger]

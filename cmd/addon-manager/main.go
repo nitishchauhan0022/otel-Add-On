@@ -23,6 +23,7 @@ import (
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
+	"k8s.io/client-go/informers"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/klog"
 	"k8s.io/klog/v2/klogr"
@@ -33,9 +34,13 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"open-cluster-management.io/addon-framework/pkg/addonmanager"
 	addonv1alpha1 "open-cluster-management.io/api/addon/v1alpha1"
+	"open-cluster-management.io/api/client/addon/clientset/versioned"
+	"open-cluster-management.io/api/client/addon/informers/externalversions"
 
 	"otel-add-on/pkg/agent"
 	"otel-add-on/pkg/hub"
+
+	"otel-add-on/pkg/config"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	//+kubebuilder:scaffold:imports
@@ -65,6 +70,9 @@ func main() {
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
+	flag.StringVar(&config.AgentImageName, "agent-image-name",
+		config.AgentImageName,
+		"The name of the addon agent's image")
 	flag.Parse()
 
 	ctrl.SetLogger(logger)
@@ -81,17 +89,22 @@ func main() {
 		os.Exit(1)
 	}
 
+	client, err := versioned.NewForConfig(mgr.GetConfig())
+	if err != nil {
+		setupLog.Error(err, "unable to set up addon client")
+		os.Exit(1)
+	}
+
 	nativeClient, err := kubernetes.NewForConfig(mgr.GetConfig())
 	if err != nil {
 		setupLog.Error(err, "unable to set up kubernetes native client")
 		os.Exit(1)
 	}
-	/*
-	   Controller add on logic
-	*/
+
+	informerFactory := externalversions.NewSharedInformerFactory(client, 0)
+	nativeInformer := informers.NewSharedInformerFactoryWithOptions(nativeClient, 0)
 
 	//+kubebuilder:scaffold:builder
-
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")
 		os.Exit(1)
@@ -127,6 +140,8 @@ func main() {
 
 	ctx, cancel := context.WithCancel(ctrl.SetupSignalHandler())
 	defer cancel()
+	go informerFactory.Start(ctx.Done())
+	go nativeInformer.Start(ctx.Done())
 	go func() {
 		if err := addonManager.Start(ctx); err != nil {
 			setupLog.Error(err, "unable to start addon manager")

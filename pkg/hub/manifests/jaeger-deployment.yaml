@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jaeger
+  name: jaeger-all-in-one
   namespace: open-cluster-management-addon
   labels:
     app: jaeger
@@ -34,6 +34,7 @@ spec:
             - name: COLLECTOR_ZIPKIN_HTTP_PORT
               value: "9411"
           image: jaegertracing/all-in-one
+          imagePullPolicy: IfNotPresent
           name: jaeger
           ports:
             - containerPort: 5775
@@ -54,6 +55,9 @@ spec:
               protocol: TCP
           readinessProbe:
             httpGet:
-              path: "/"
+              path: /
               port: 14269
-            initialDelaySeconds: 5
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"

@@ -15,7 +15,9 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/klog/v2"
 	"open-cluster-management.io/addon-framework/pkg/assets"
+	addonv1alpha1 "open-cluster-management.io/api/addon/v1alpha1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var (
@@ -27,6 +29,7 @@ var (
 func init() {
 	utilruntime.Must(scheme.AddToScheme(genericScheme))
 	utilruntime.Must(v1.AddToScheme(genericScheme))
+	utilruntime.Must(addonv1alpha1.AddToScheme(genericScheme))
 }
 
 //go:embed manifests
@@ -39,6 +42,7 @@ var manifestFiles = []string{
 	"manifests/collector-deployment.yaml",
 	"manifests/collector-service.yaml",
 	"manifests/collector-config.yaml",
+	"manifests/jaeger-external.yaml",
 }
 
 func Applymanifests(rclient client.Client) error {
@@ -54,6 +58,9 @@ func Applymanifests(rclient client.Client) error {
 			return err
 		}
 		resource := obj.(client.Object)
+		resource.SetOwnerReferences([]metav1.OwnerReference{
+			ownerrefernce(rclient),
+		})
 		err = deploy(rclient, resource, *gvk)
 		if err != nil {
 			return err
@@ -93,4 +100,29 @@ func deploy(rclient client.Client, resource client.Object, gvk schema.GroupVersi
 		}
 	}
 	return nil
+}
+
+func ownerrefernce(rclient client.Client) metav1.OwnerReference{
+	current := &unstructured.Unstructured{}
+	current.SetGroupVersionKind(schema.GroupVersionKind{
+		Group:   addonv1alpha1.GroupName,
+		Version: addonv1alpha1.GroupVersion.Version,
+		Kind:    "ClusterManagementAddOn",
+	})
+	err := rclient.Get(
+		context.TODO(),
+		types.NamespacedName{
+			Namespace: "open-cluster-management-addon",
+			Name:      "otel-collector",
+		}, current)
+	if err != nil {
+		klog.ErrorS(err, "Error getting owner refernece object")
+
+	}
+	return metav1.OwnerReference{
+		APIVersion:         current.GetAPIVersion(),
+		Kind:               "ClusterManagementAddOn",
+		Name:               current.GetName(),
+		UID:                current.GetUID(),
+	}
 }
