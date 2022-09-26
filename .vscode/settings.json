@@ -1,6 +1,0 @@
-{
-    "makefile.extensionOutputFolder": "./.vscode",
-    "yaml.schemas": {
-        "kubernetes://schema/apps/v1@deployment": "file:///home/nitish/Open-Cluster-Management/otel-Add-On/pkg/hub/manifests/collector-deployment.yaml"
-    }
-}
